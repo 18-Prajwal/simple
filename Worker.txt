@@ -9,10 +9,10 @@ yum install java-17* -y
 yum install docker -y
 
 #to add user
-useradd Ansible 
+useradd ansible 
 
 #to add password
-password 1234 
+passwd ansible
 
 #
 visudo 
