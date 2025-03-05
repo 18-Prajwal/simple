@@ -53,13 +53,25 @@ sudo systemctl daemon-reload
 
 visudo 
 
-ssh Permission => vi /etc/ssh/sshd_config
+ansible ALL=(ALL) NOPASSWD: ALL
+jenkins ALL=(ALL) NOPASSWD: ALL
 
-vi /etc/ansible/hosts 
-    =>  [dev] worker private IP
+
+ssh Permission 
+    =>    vi /etc/ssh/sshd_config
+
+    =>    service sshd restart
+
+    =>    vi /etc/ansible/hosts
+
+        =>    [dev] worker private IP
 
 vi /etc/ansible/ansible.cfg 
     =>  Inventory sudo Uncomment
+
+useradd ansible
+
+passwd ansible
 
 #go into ansible
     =>  su - ansible
