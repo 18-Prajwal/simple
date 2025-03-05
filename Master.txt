@@ -1,0 +1,158 @@
+In master 
+
+install => git, Java, Docker, Ansible, Jenkins 
+
+#to install Git
+yum install git -y
+
+
+#to install Java
+yum install java-17* -y
+
+#to install Docker
+yum install docker -y
+
+******************************************************************************************
+
+#to install Ansible
+
+echo "Installing ansible"
+sudo amazon-linux-extras install ansible2 -y
+echo "provide hosts information manually"
+echo "config /etc/ansible/ansible.cfg file"
+sudo sed -i 's/^#\(inventory\s*=\s*\/etc\/ansible\/hosts\)/\1/' /etc/ansible/ansible.cfg
+sudo sed -i 's/^#\(sudo_user\s*=\s*root\)/\1/' /etc/ansible/ansible.cfg
+echo "/etc/ansible/ansible/cfg done"
+sudo useradd ansible
+echo "user is created"
+echo "ansible:1234" | sudo chpasswd 
+sudo sed -i '/^root\s\+ALL=(ALL)\s\+ALL/a ansible ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
+sudo sed -i 's/^#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+service sshd restart
+echo "master node configuration is done"
+
+*********************************************************************************************************************
+
+
+#to install Jenkins
+
+sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
+  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install jenkins
+
+***********************************************************************************
+#Give some permission
+
+visudo 
+
+ssh Permission => vi /etc/ssh/sshd_config
+
+vi /etc/ansible/hosts 
+    =>  [dev] worker private IP
+
+vi /etc/ansible/ansible.cfg 
+    =>  Inventory sudo Uncomment
+
+#go into ansible
+    =>  su - ansible
+
+    =>  ssh-keygen
+
+    =>  ssh-copy-id ansible@worker private IP
+
+    =>  ssh ansible@worker private IP
+
+    =>  password 1234
+
+    =>  exit
+
+Start the Docker 
+    =>  systemctl start docker
+
+Start the Jenkins
+    =>  systemctl start jenkins
+
+Start the ssh
+    =>  systemctl start sshd
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Go to Manage Jenkins 
+    =>  "install the publish over SSH"
+
+Go to Tools 
+    =>  Maven 
+        =>  apply and save
+
+Go to Systems
+
+=>  In the Passpharse === Enter the password "1234" 
+=>  In the SSh server === Provide the name as a "remote"
+
+=>  hostname give Master Private IP u
+=>  Username "ansible"
+
+Check the box for use password proxy password === "1234" 
+
+Then apply and save
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+******************* Master ***************
+
+usermod -aG docker ansible
+
+usermod -aG docker jenkins
+
+systemctl restart docker
+
+systemctl restart jenkins
+
+******************** Worker ***************
+
+usermod -aG docker ansible
+
+systemctl restart docker
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^ Jenkins ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Refresh Jenkins Login again 
+
+Goto " Systems " test the configuration
+
+Create freestyle project
+
+Source code management => Git
+
+Repository URL => https://github.com
+
+Build step => Execute shell
+
+Add Maven
+
+Goals clean package
+
+Advanced select send.......
+
+**/*.war
+
+target/
+
+Add Server
+=>   Source file "Dockerfile"
+=>  execcommand " password "
+=>  change Docker hubname "Docker hubname"
+
+Add Server
+=>   Source file "play.yml"
+=>  execcommand " ansible-playbook play.yml"
+
+
+apply and save
+
+Build Now

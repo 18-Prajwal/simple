@@ -1,0 +1,23 @@
+In worker 
+
+install => Java, Docker
+
+yum install java-17* -y
+
+yum install docker -y
+
+#to add user
+useradd Ansible 
+
+#to add password
+password 1234 
+
+#
+visudo 
+
+#
+ssh Permission vi /etc/ssh/sshd_config
+
+#Start the Docker 
+
+systemctl start docker
