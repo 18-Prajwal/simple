@@ -17,6 +17,9 @@ passwd ansible
 #
 visudo 
 
+ansible ALL=(ALL) NOPASSWD: ALL
+jenkins ALL=(ALL) NOPASSWD: ALL
+
 #
 ssh Permission vi /etc/ssh/sshd_config
 
