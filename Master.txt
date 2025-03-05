@@ -2,6 +2,8 @@ In master
 
 install => git, Java, Docker, Ansible, Jenkins 
 
+sudo su -
+
 #to install Git
 yum install git -y
 
@@ -61,13 +63,17 @@ vi /etc/ansible/ansible.cfg
 #go into ansible
     =>  su - ansible
 
+    =>  ssh private IP worker
+
     =>  ssh-keygen
 
     =>  ssh-copy-id ansible@worker private IP
 
-    =>  ssh ansible@worker private IP
+    =>  ansible dev -m ping
 
-    =>  password 1234
+    #=>  ssh ansible@worker private IP
+
+    #=>  password 1234
 
     =>  exit
 
@@ -92,10 +98,14 @@ Go to Tools
 Go to Systems
 
 =>  In the Passpharse === Enter the password "1234" 
-=>  In the SSh server === Provide the name as a "remote"
+add
+=>  In the SSH server === Provide the name as a "remote"
 
-=>  hostname give Master Private IP u
+=>  hostname give Master Private IP 
+
 =>  Username "ansible"
+
+Advanced
 
 Check the box for use password proxy password === "1234" 
 
@@ -131,11 +141,24 @@ Source code management => Git
 
 Repository URL => https://github.com
 
-Build step => Execute shell
+Build step => Maven version
 
 Add Maven
 
 Goals clean package
+
+Add Build Steps
+
+send
+
+docker rm -f $(docker ps -aq)
+docker rm -f web || true
+docker rmi -f $(docker images -q) || true
+docker build -t app .
+docker tag app prajwal0303/webapp:latest
+echo "Prajwal@2003" | docker login -u prajwal0303 --password-stdin
+docker push prajwal0303/webapp:latest
+docker run -it -d --name web -p 8081:8080 prajwal0303/webapp:latest
 
 Advanced select send.......
 
